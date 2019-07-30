@@ -40,21 +40,25 @@ public class HashSet<ValueType> {
     // Returns true if the given value is present in the set.
     public boolean find(ValueType value){
         int hashIndex = value.hashCode() % mTable.length;
-        
-        if (mTable[hashIndex].mValue.equals(value)) {
-            return true;
+
+        try {
+            if (mTable[hashIndex].mValue.equals(value)) {
+                return true;
+            }
         }
 
-        for (int i = 0; i < mTable.length; i++) {
-            int probe = ((i*i)+i) / 2;
-            hashIndex = (value.hashCode() + probe) % mTable.length;
+        catch (NullPointerException exception) {
+            for (int i = 0; i < mTable.length; i++) {
+                int probe = ((i * i) + i) / 2;
+                hashIndex = (value.hashCode() + probe) % mTable.length;
 
-            if (mTable[hashIndex] == null) {
-                return false;
-            }
+                if (mTable[hashIndex] == null) {
+                    return false;
+                }
 
-            if (mTable[hashIndex].equals(value)) {
-                return true;
+                if (mTable[hashIndex].equals(value)) {
+                    return true;
+                }
             }
         }
         return false;

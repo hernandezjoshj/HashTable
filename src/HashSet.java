@@ -13,17 +13,39 @@ public class HashSet<ValueType> {
         if (!isPowerOf2(tableSize)) {
             tableSize = nextPowerOf2(tableSize);
         }
-
         mTable = (Entry[])Array.newInstance(Entry.class, tableSize);
-
     }
 
     public void add(ValueType value) {
+        if (loadFactor() > 0.8) {
+            HashSet tempHS = new HashSet(mTable.length * 2);
+            tempHS.mTable = (Entry[]) Array.newInstance(Entry.class, mTable.length * 2);
+            int m = mTable.length;
+            int newM = tempHS.mTable.length;
+            for (int i = 0; i < m; i++) {
+                if (mTable[i] != null && !mTable[i].mIsNil) {
+                    int hashCode = mTable[i].mValue.hashCode();
+                    for (int j = 0; j < newM; j++) {
+                        int probe = ((j * j) + j) / 2;
+                        int hashIndex = (hashCode + probe) % m;
+                        if (tempHS.mTable[hashIndex] == null) {
+                            Entry entry = new Entry();
+                            entry.mValue = mTable[i].mValue;
+                            entry.mIsNil = false;
+                            tempHS.mTable[hashIndex] = entry;
+                            break;
+                        }
+                    }
+                }
+            }
+            mTable = tempHS.mTable;
+        }
+
         int m = mTable.length;
-        int hashCode, probe, hashIndex;
+        int hashCode = value.hashCode();
+        int probe, hashIndex;
 
         for (int i = 0; i < m; i++) {
-            hashCode = value.hashCode();
             probe = ((i*i)+i) / 2;
             hashIndex = (hashCode + probe) % m;
             if (mTable[hashIndex] == null) {
@@ -37,9 +59,11 @@ public class HashSet<ValueType> {
 
     }
 
-    // Returns true if the given value is present in the set.
     public boolean find(ValueType value){
-        int hashIndex = value.hashCode() % mTable.length;
+        int m = mTable.length;
+        int hashCode = value.hashCode();
+        int hashIndex = hashCode % mTable.length;
+        int probe;
 
         try {
             if (mTable[hashIndex].mValue.equals(value)) {
@@ -48,9 +72,9 @@ public class HashSet<ValueType> {
         }
 
         catch (NullPointerException exception) {
-            for (int i = 0; i < mTable.length; i++) {
-                int probe = ((i * i) + i) / 2;
-                hashIndex = (value.hashCode() + probe) % mTable.length;
+            for (int i = 0; i < m; i++) {
+                probe = ((i * i) + i) / 2;
+                hashIndex = (hashCode + probe) % m;
 
                 if (mTable[hashIndex] == null) {
                     return false;
@@ -64,14 +88,18 @@ public class HashSet<ValueType> {
         return false;
     }
 
-    // Removes the given value from the set.
     public void remove(ValueType value) {
+        int hashCode = value.hashCode();
+        int hashIndex = hashCode % mTable.length;
+
+        mTable[hashIndex].mValue = null;
+        mTable[hashIndex].mIsNil = true;
     }
 
     private int count() {
         mCount = 0;
         for (int i = 0; i < mTable.length; i++) {
-            if (mTable[i].mValue != null && !mTable[i].mIsNil) {
+            if (mTable[i] != null && !mTable[i].mIsNil) {
                 mCount++;
             }
         }
@@ -79,13 +107,9 @@ public class HashSet<ValueType> {
     }
 
     private double loadFactor() {
-        int n = mCount;
+        int n = count();
         int m = mTable.length;
-        return n/m;
-    }
-
-    private void resize() {
-
+        return (double)n/m;
     }
 
     private boolean isPowerOf2 (int n) {
@@ -105,5 +129,7 @@ public class HashSet<ValueType> {
         }
         return temp;
     }
+
+
 
 }

@@ -1,22 +1,22 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Scanner;
+
 public class main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
-        HashSet hashSet = new HashSet(5);
-        hashSet.add(0); //1
-        hashSet.add(1); //2
-        hashSet.add(2); //3
-        hashSet.add(4); //4
-        hashSet.add(3); //5
-        hashSet.add(5); //6
-        hashSet.add(6); //7
-        hashSet.add(7); //8
+        HashSet hashSet = new HashSet(50);
 
-        System.out.println(hashSet.find(4));
-        System.out.println(hashSet.find(3));
-        System.out.println(hashSet.find(5));
+        File file = new File("/Users/josh/dev/328Lab3/trump_speech.txt");
+        Scanner scanner = new Scanner(file);
 
+        while (scanner.hasNext()) {
+            String string = scanner.next().replaceAll("[^a-zA-Z0-9]", "");
+            if (!string.equals("")) {
+                hashSet.add(string);
+            }
+        }
     }
-
-
 }

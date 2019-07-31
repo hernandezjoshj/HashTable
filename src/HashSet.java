@@ -17,6 +17,9 @@ public class HashSet<ValueType> {
     }
 
     public void add(ValueType value) {
+        if (find(value)) {
+            return;
+        }
         if (loadFactor() > 0.8) {
             HashSet tempHS = new HashSet(mTable.length * 2);
             tempHS.mTable = (Entry[]) Array.newInstance(Entry.class, mTable.length * 2);
@@ -27,7 +30,7 @@ public class HashSet<ValueType> {
                     int hashCode = mTable[i].mValue.hashCode();
                     for (int j = 0; j < newM; j++) {
                         int probe = ((j * j) + j) / 2;
-                        int hashIndex = (hashCode + probe) % m;
+                        int hashIndex = Math.abs((hashCode + probe) % m);
                         if (tempHS.mTable[hashIndex] == null) {
                             Entry entry = new Entry();
                             entry.mValue = mTable[i].mValue;
@@ -47,12 +50,13 @@ public class HashSet<ValueType> {
 
         for (int i = 0; i < m; i++) {
             probe = ((i*i)+i) / 2;
-            hashIndex = (hashCode + probe) % m;
+            hashIndex = Math.abs((hashCode + probe) % m);
             if (mTable[hashIndex] == null) {
                 Entry entry = new Entry();
                 entry.mValue = value;
                 entry.mIsNil = false;
                 mTable[hashIndex] = entry;
+                System.out.println(value);
                 break;
             }
         }
@@ -90,10 +94,16 @@ public class HashSet<ValueType> {
 
     public void remove(ValueType value) {
         int hashCode = value.hashCode();
-        int hashIndex = hashCode % mTable.length;
 
-        mTable[hashIndex].mValue = null;
-        mTable[hashIndex].mIsNil = true;
+        for (int i = 0; i < mTable.length; i++) {
+            int probe = ((i*i)+i) / 2;
+            int hashIndex = (hashCode + probe) % mTable.length;
+            if (mTable[hashIndex].mValue.equals(value)) {
+                mTable[hashIndex].mValue = null;
+                mTable[hashIndex].mIsNil = true;
+            }
+        }
+
     }
 
     private int count() {

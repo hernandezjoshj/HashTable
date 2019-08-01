@@ -20,8 +20,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/HashSet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="110" column="36" lean-forward="true" selection-start-line="110" selection-start-column="36" selection-end-line="110" selection-end-column="36" />
+            <state relative-caret-position="130">
+              <caret line="92" column="23" selection-start-line="92" selection-start-column="23" selection-end-line="92" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -151,12 +151,12 @@
       <option name="presentableId" value="Default" />
       <updated>1564340028066</updated>
       <workItem from="1564340032255" duration="10232000" />
-      <workItem from="1564457344985" duration="29475000" />
+      <workItem from="1564457344985" duration="30976000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39707000" />
+    <option name="totallyTimeSpent" value="41208000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="22" width="1440" height="878" extended-state="6" />
@@ -202,12 +202,6 @@
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main.java</url>
           <line>20</line>
-          <properties />
-          <option name="timeStamp" value="41" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main.java</url>
-          <line>21</line>
           <properties />
           <option name="timeStamp" value="42" />
         </line-breakpoint>
@@ -297,8 +291,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/HashSet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="110" column="36" lean-forward="true" selection-start-line="110" selection-start-column="36" selection-end-line="110" selection-end-column="36" />
+        <state relative-caret-position="130">
+          <caret line="92" column="23" selection-start-line="92" selection-start-column="23" selection-end-line="92" selection-end-column="23" />
         </state>
       </provider>
     </entry>

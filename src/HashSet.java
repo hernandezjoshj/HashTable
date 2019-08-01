@@ -42,7 +42,7 @@ public class HashSet<ValueType> {
                         hashIndex = Math.abs((hashCode + probe) % m);
                         //if the index of the new table is null, add the element to the new table
                         if (temp[hashIndex] == null) {
-                            Entry entry = new Entry();
+                            Entry entry = new Entry();          //todo:: figure out whether or not new entry is needed
                             entry.mValue = mTable[i].mValue;
                             entry.mIsNil = false;
                             temp[hashIndex] = entry;
@@ -73,9 +73,11 @@ public class HashSet<ValueType> {
         }
     }
 
+    //todo:: fix if condition
     public boolean find(ValueType value) {
         int m = mTable.length;
         int hashCode, probe, hashIndex;
+
 
 
         for (int i = 0; i < m; i++) {
@@ -90,7 +92,9 @@ public class HashSet<ValueType> {
             }
             //checks first to see if the index is empty, then checks the NIL flag for the case that
             //an element was previously there but was deleted
-            else if (mTable[hashIndex] == null) {
+
+
+            if (mTable[hashIndex] == null) { // && !mTable[hashIndex].mIsNil) {  //todo:: fix this
                     return false;
                 }
             }
@@ -98,6 +102,7 @@ public class HashSet<ValueType> {
     }
 
 
+    //todo:: fix reassignment
     public void remove(ValueType value) {
         int m = mTable.length;
         int hashCode, probe, hashIndex;

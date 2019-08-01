@@ -18,8 +18,6 @@ public class main {
                 words.add(string);
             }
         }
-        words.remove("and");
-        words.find("and");
-
+        System.out.println(words.find("add"));
     }
 }

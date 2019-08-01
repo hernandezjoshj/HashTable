@@ -10,47 +10,58 @@ public class HashSet<ValueType> {
     private int mCount;
 
     public HashSet(int tableSize) {
+        //adjust tableSize parameter if it is not a power of 2, so table length = 2^n
         if (!isPowerOf2(tableSize)) {
             tableSize = nextPowerOf2(tableSize);
         }
-        mTable = (Entry[])Array.newInstance(Entry.class, tableSize);
+        mTable = (Entry[]) Array.newInstance(Entry.class, tableSize);
     }
 
     public void add(ValueType value) {
+        int m, mTemp, hashCode, probe, hashIndex;
+
+        //if value is already in the table, no need to resize nor add
         if (find(value)) {
             return;
         }
+
+        //if #elements in the table take up more than 80% of the current table size, double the table size
         if (loadFactor() > 0.8) {
-            HashSet tempHS = new HashSet(mTable.length * 2);
-            tempHS.mTable = (Entry[]) Array.newInstance(Entry.class, mTable.length * 2);
-            int m = mTable.length;
-            int newM = tempHS.mTable.length;
+            m = mTable.length;
+            Entry[] temp = (Entry[]) Array.newInstance(Entry.class, m * 2);
+            mTemp = temp.length;
+
+            //scan the original table from left to right and add existing elements to the new table
             for (int i = 0; i < m; i++) {
-                if (mTable[i] != null && !mTable[i].mIsNil) {
-                    int hashCode = mTable[i].mValue.hashCode();
-                    for (int j = 0; j < newM; j++) {
-                        int probe = ((j * j) + j) / 2;
-                        int hashIndex = Math.abs((hashCode + probe) % m);
-                        if (tempHS.mTable[hashIndex] == null) {
+                if (mTable[i] != null) {
+                    //when an element is found in the original table, hash it to the new table with
+                    //the probing function to avoid collisions
+                    for (int j = 0; j < mTemp; j++) {
+                        hashCode = mTable[i].mValue.hashCode();
+                        probe = ((j * j) + j) / 2;
+                        hashIndex = Math.abs((hashCode + probe) % m);
+                        //if the index of the new table is null, add the element to the new table
+                        if (temp[hashIndex] == null) {
                             Entry entry = new Entry();
                             entry.mValue = mTable[i].mValue;
                             entry.mIsNil = false;
-                            tempHS.mTable[hashIndex] = entry;
+                            temp[hashIndex] = entry;
                             break;
                         }
                     }
                 }
             }
-            mTable = tempHS.mTable;
+            //reassign the original table to point to the new table
+            mTable = temp;
         }
 
-        int m = mTable.length;
-        int hashCode = value.hashCode();
-        int probe, hashIndex;
-
+        //continue with adding the new value into the table
+        m = mTable.length;
         for (int i = 0; i < m; i++) {
-            probe = ((i*i)+i) / 2;
+            hashCode = value.hashCode();
+            probe = ((i * i) + i) / 2;
             hashIndex = Math.abs((hashCode + probe) % m);
+
             if (mTable[hashIndex] == null) {
                 Entry entry = new Entry();
                 entry.mValue = value;
@@ -60,52 +71,54 @@ public class HashSet<ValueType> {
                 break;
             }
         }
-
     }
 
-    public boolean find(ValueType value){
+    public boolean find(ValueType value) {
         int m = mTable.length;
-        int hashCode = value.hashCode();
-        int hashIndex = hashCode % mTable.length;
-        int probe;
+        int hashCode, probe, hashIndex;
 
-        try {
-            if (mTable[hashIndex].mValue.equals(value)) {
+
+        for (int i = 0; i < m; i++) {
+            hashCode = value.hashCode();
+            probe = ((i * i) + i) / 2;
+            hashIndex = Math.abs((hashCode + probe) % m);
+
+            //on first iteration, hashIndex is not affected; if the element is not at that index,
+            //probing will continue to check
+            if (mTable[hashIndex] != null && mTable[hashIndex].mValue.equals(value)) {
                 return true;
             }
-        }
-
-        catch (NullPointerException exception) {
-            for (int i = 0; i < m; i++) {
-                probe = ((i * i) + i) / 2;
-                hashIndex = (hashCode + probe) % m;
-
-                if (mTable[hashIndex] == null) {
+            //checks first to see if the index is empty, then checks the NIL flag for the case that
+            //an element was previously there but was deleted
+            else if (mTable[hashIndex] == null) {
                     return false;
                 }
-
-                if (mTable[hashIndex].equals(value)) {
-                    return true;
-                }
             }
-        }
         return false;
     }
 
-    public void remove(ValueType value) {
-        int hashCode = value.hashCode();
 
-        for (int i = 0; i < mTable.length; i++) {
-            int probe = ((i*i)+i) / 2;
-            int hashIndex = (hashCode + probe) % mTable.length;
-            if (mTable[hashIndex].mValue.equals(value)) {
-                mTable[hashIndex].mValue = null;
-                mTable[hashIndex].mIsNil = true;
+    public void remove(ValueType value) {
+        int m = mTable.length;
+        int hashCode, probe, hashIndex;
+
+        for (int i = 0; i < m; i++) {
+            hashCode = value.hashCode();
+            probe = ((i * i) + i) / 2;
+            hashIndex = Math.abs((hashCode + probe) % m);
+            if (mTable[hashIndex] != null && mTable[hashIndex].mValue.equals(value)) {
+                Entry entry = new Entry();
+                entry.mIsNil = true;
+                mTable[hashIndex] = entry;
             }
         }
-
     }
 
+
+
+    ///auxiliary methods
+
+    //returns number of elements currently in the table
     private int count() {
         mCount = 0;
         for (int i = 0; i < mTable.length; i++) {
@@ -116,13 +129,15 @@ public class HashSet<ValueType> {
         return mCount;
     }
 
+    //returns the load factor of the table
     private double loadFactor() {
         int n = count();
         int m = mTable.length;
-        return (double)n/m;
+        return (double) n / m;
     }
 
-    private boolean isPowerOf2 (int n) {
+    //returns whether or not N is a power of 2
+    private boolean isPowerOf2(int n) {
         if (n == 0) {
             return false;
         }
@@ -132,6 +147,7 @@ public class HashSet<ValueType> {
         return ceil == floor;
     }
 
+    //returns the closest power of 2 >= N
     private int nextPowerOf2(int n) {
         int temp = 1;
         while (temp <= n) {
@@ -139,7 +155,5 @@ public class HashSet<ValueType> {
         }
         return temp;
     }
-
-
 
 }
